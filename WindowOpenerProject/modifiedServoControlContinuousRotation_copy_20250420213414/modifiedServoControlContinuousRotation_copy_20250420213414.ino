@@ -253,6 +253,12 @@ void fetchWeatherAndAct(float t) {
   http.end();
 }
 
+void saveMode(Mode mode) {
+  preferences.begin("my-app", false);
+  preferences.putInt("mode", mode);
+  preferences.end();
+}
+
 
 
 void setup() {
@@ -262,27 +268,43 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  preferences.begin("my-app", false); // namespace is "my-app"
-  targetTemp = preferences.getFloat("targetTemp", 26.0); // load saved temp or default 26.0
+
+  preferences.begin("my-app", false); // open preferences once
+
+  // Load saved values
+  targetTemp = preferences.getFloat("targetTemp", 26.0);
+  currentMode = static_cast<Mode>(preferences.getInt("mode", 0)); // <- fixed line
+
+  preferences.end(); // done reading
+
   Serial.print("Loaded targetTemp: ");
   Serial.println(targetTemp);
+  Serial.print("Loaded currentMode: ");
+  Serial.println(currentMode);
 
 
   server.on("/", HTTP_GET, handleRoot);
   server.on("/auto", HTTP_GET, []() {
     currentMode = AUTO;
+    saveMode(currentMode);
     server.send(200, "text/plain", "Mode: AUTO");
   });
+
   server.on("/open", HTTP_GET, []() {
     currentMode = OPEN;
+    saveMode(currentMode);
     server.send(200, "text/plain", "Mode: OPEN");
   });
+
   server.on("/close", HTTP_GET, []() {
     currentMode = CLOSE;
+    saveMode(currentMode);
     server.send(200, "text/plain", "Mode: CLOSE");
   });
+
   server.on("/stop", HTTP_GET, []() {
     currentMode = STOP;
+    saveMode(currentMode);
     server.send(200, "text/plain", "Mode: STOP");
   });
   server.on("/set-temp", HTTP_GET, []() {
@@ -321,9 +343,29 @@ void setup() {
   dht.begin();
 }
 
+bool autoModeFirstTime = true;
+int lastMode = -1;  // Or use an enum value not possible in currentMode
+
 void loop() {
   reconnectWiFi();
   server.handleClient();
+
+  if (currentMode != lastMode) { //Stopping motor only when AUTO is triggered from something else for the first time
+    // Mode just changed
+    if (currentMode == AUTO) {
+      if (autoModeFirstTime) {
+        Serial.println("AUTO mode activated for the first time!");
+        // Do the "first-time only" thing here
+        stopWindow();
+        autoModeFirstTime = false;
+      }
+    } else {
+      // Reset the flag when leaving AUTO mode
+      autoModeFirstTime = true;
+    }
+    lastMode = currentMode;
+  }
+
 
   if (currentMode == AUTO) {
     static unsigned long lastCheck = 0;
@@ -365,7 +407,7 @@ void loop() {
   }
 
 
-  if (motorRunning && millis() - motorStartTime >= motorRunDuration || (motorRunDuration == -1 && currentMode == AUTO)) { // Handle motor timeout or AUTO pressed from manual open/close (stopping)
+  if (motorRunning && millis() - motorStartTime >= motorRunDuration) { // Handle motor timeout 
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
     motorRunning = false;
