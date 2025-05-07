@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="24dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
-        android:id="@+id/textRoomTemp"
-        android:text="Room Temp: --°C"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
-    <TextView
-        android:id="@+id/textTemp"
-        android:text="Set Temp: "
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    android:layout_height="match_parent">
 
-    <NumberPicker
-        android:id="@+id/numberPicker"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:gravity="center"
+        android:padding="24dp">
 
-    <Button
-        android:id="@+id/btnSetTemp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Set Temperature" />
+        <TextView
+            android:id="@+id/textRoomTemp"
+            android:text="Room Temp: --°C"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
 
-    <Button android:id="@+id/btnAuto" android:text="Auto Mode" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnOpen" android:text="Open Window" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnClose" android:text="Close Window" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-    <Button android:id="@+id/btnStop" android:text="Stop Window" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/textTemp"
+            android:text="Set Temp: "
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:id="@+id/btnSetTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Temperature" />
+
+        <Button
+            android:id="@+id/btnAuto"
+            android:text="Auto Mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnOpen"
+            android:text="Open Window"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnClose"
+            android:text="Close Window"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnStop"
+            android:text="Stop Window"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>
