@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.coroutines.delay
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private val esp32Url = "http://192.168.1.195"
@@ -24,6 +25,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStop: Button
     private lateinit var textTemp: TextView
     private lateinit var textRoomTemp: TextView
+    private lateinit var textPrecip: TextView
+    private lateinit var textWind: TextView
+
 
     // Track the current ongoing command
     private var currentCommandJob: Job? = null
@@ -42,10 +46,14 @@ class MainActivity : AppCompatActivity() {
         btnClose = findViewById(R.id.btnClose)
         btnStop = findViewById(R.id.btnStop)
         textRoomTemp = findViewById(R.id.textRoomTemp)
+        textPrecip = findViewById(R.id.textPrecip)
+        textWind = findViewById(R.id.textWind)
+
 
         updateRoomTempDisplay()
         updateTempDisplay()
         updateModeHighlight()
+        updateWeatherDisplay()
 
         findViewById<Button>(R.id.btnSetTemp).setOnClickListener {
             val selectedTemp = numberPicker.value
@@ -83,7 +91,8 @@ class MainActivity : AppCompatActivity() {
             while (true) {
                 updateRoomTempDisplay()  // Update the room temp
                 updateTempDisplay() // Update the set temp
-                delay(10000)  // 10 second delay before repeating
+                updateWeatherDisplay()
+                delay(5000)  // 5 second delay before repeating
             }
         }
     }
@@ -180,5 +189,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun updateWeatherDisplay() {
+        lifecycleScope.launch {
+            try {
+                val url = URL("$esp32Url/get-weather")
+                val response = withContext(Dispatchers.IO) {
+                    with(url.openConnection() as HttpURLConnection) {
+                        requestMethod = "GET"
+                        inputStream.bufferedReader().readText()
+                    }
+                }
+
+                val json = JSONObject(response)
+                val precip = json.getString("precipitation")
+                val wind = json.getString("wind")
+
+                textPrecip.text = "Precipitation: $precip mm/h"
+                textWind.text = "Wind: $wind km/h"
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 }
 

@@ -10,6 +10,7 @@
         android:gravity="center"
         android:padding="24dp">
 
+
         <TextView
             android:id="@+id/textRoomTemp"
             android:text="Room Temp: --°C"
@@ -36,6 +37,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set Temperature" />
+
+        <TextView
+            android:id="@+id/textPrecip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precipitation: -- mm/h" />
+
+        <TextView
+            android:id="@+id/textWind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wind: -- km/h" />
+
 
         <Button
             android:id="@+id/btnAuto"

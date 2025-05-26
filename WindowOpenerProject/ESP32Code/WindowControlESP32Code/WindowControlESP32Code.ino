@@ -154,7 +154,8 @@ void stopWindow() {
   motorDirection = 0;
 }
 
-
+String currentPrecip = "-0.0";
+String currentWind = "-0.0";
 void fetchWeatherAndAct(float t) {
   if (currentMode != AUTO) return;  // Check immediately at the start
 
@@ -196,6 +197,9 @@ void fetchWeatherAndAct(float t) {
       float windSpeed = doc["current"]["wind_speed"];
 
       Serial.printf("Rain: %.2f mm/h, Wind: %.2f km/h\n", precipitation, windSpeed);
+      // Store them globally for web access
+      currentPrecip = String(precipitation, 2);
+      currentWind = String(windSpeed, 2);
 
       if (currentMode != AUTO) {
         http.end();
@@ -483,6 +487,12 @@ void setup() {
   });
   
   server.on("/set-alarm", handleSetAlarm);
+
+  server.on("/get-weather", HTTP_GET, []() {
+  String json = "{\"precipitation\":\"" + currentPrecip + "\",\"wind\":\"" + currentWind + "\"}";
+  server.send(200, "application/json", json);
+  });
+
 
 
   server.begin();
